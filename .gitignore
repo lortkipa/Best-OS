@@ -1,0 +1,9 @@
+
+# binaries folder
+bin/
+
+# actual binaries
+*.o
+*.bin
+*.elf
+*.iso
