@@ -1,25 +1,31 @@
+
 # general settings
 project := bootloader
 extension := .efi
 entry_point := efi_main
+
 # paths
 bin_path := bin
 src_path := bootloader
-ovmf_path := $(bin_path)/OVMF.fd
-ovmf_sys_path := /usr/share/ovmf/x64/OVMF.4m.fd
-disk_img := $(bin_path)/boot.img
+
 # files
 main_file := $(src_path)/boot.asm
+ovmf_file := $(bin_path)/OVMF.fd
+ovmf_sys_file := /usr/share/ovmf/x64/OVMF.4m.fd
+disk_img := $(bin_path)/boot.img
+
 # assembly
 assembler := nasm
-assembly_flags := -f win64
+bootloader_flags := -f win64
+
 # linker
 linker := lld-link
 linker_flags := /subsystem:efi_application /entry:$(entry_point) /out:$(bin_path)/$(project)$(extension)
 
+# run project using virtual machine
 .PHONY: run
 run: disk_image
-	qemu-system-x86_64 -m 512 -bios $(ovmf_path) -drive format=raw,file=$(disk_img)
+	qemu-system-x86_64 -m 512 -bios $(ovmf_file) -drive format=raw,file=$(disk_img)
 
 # create disk image
 .PHONY: disk_image
@@ -38,12 +44,12 @@ executable: object
 # produce object
 .PHONY: object
 object: ovmf
-	$(assembler) $(assembly_flags) $(main_file) -o $(bin_path)/$(project).o
+	$(assembler) $(bootloader_flags) $(main_file) -o $(bin_path)/$(project).o
 
 # get ovmf binaries (it should be installed on machine)
 .PHONY: ovmf
 ovmf: bin
-	cp $(ovmf_sys_path) $(ovmf_path)
+	cp $(ovmf_sys_file) $(ovmf_file)
 
 # create folder for binaries
 .PHONY: bin
