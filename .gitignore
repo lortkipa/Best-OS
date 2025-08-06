@@ -1,0 +1,13 @@
+
+# binaries folder
+bin/
+
+# binary files
+*.o
+*.bin
+*.elf
+*.so
+*.iso
+
+# mount folder
+mnt/
