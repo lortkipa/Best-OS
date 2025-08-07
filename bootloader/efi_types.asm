@@ -33,6 +33,7 @@ struc efi_text_output_protocol
     .query_mode resq 1
     .set_mode resq 1
     .set_attribute resq 1
+    .clear_screen resq 1
     .set_cursor_pos resq 1
     .enable_cursor resq 1
     .mode resq 1
