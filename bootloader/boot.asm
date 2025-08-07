@@ -5,7 +5,6 @@
 bits 64
 
 %include 'efi_types.asm'
-%include 'io/console.asm'
 
 section .data
     msg: dw 'H','e','l','l','o',' ','T','o',' ','B','e','s','t','-','O','S',0
