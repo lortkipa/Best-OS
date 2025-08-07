@@ -16,16 +16,20 @@ disk_img := $(bin_path)/boot.img
 
 # assembly
 assembler := nasm
-bootloader_flags := -f win64
+bootloader_flags := -f win64 -I$(src_path)
 
 # linker
 linker := lld-link
 linker_flags := /subsystem:efi_application /entry:$(entry_point) /out:$(bin_path)/$(project)$(extension)
 
+# virtual machine
+vm := qemu-system-x86_64  
+vmflags := -m 512 -bios $(ovmf_file) -drive
+
 # run project using virtual machine
 .PHONY: run
 run: disk_image
-	qemu-system-x86_64 -m 512 -bios $(ovmf_file) -drive format=raw,file=$(disk_img)
+	 $(vm) $(vmflags) format=raw,file=$(disk_img)
 
 # create disk image
 .PHONY: disk_image
