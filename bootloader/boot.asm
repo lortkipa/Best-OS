@@ -5,10 +5,10 @@
 bits 64
 
 %include 'efi_types.asm'
+%include 'io/console.asm'
 
 section .data
     msg: dw 'H','e','l','l','o',' ','T','o',' ','B','e','s','t','O','S',0
-    ; msg: dw 'H','e','l','l','o',' ','T','o',' ','B','e','s','t','-','O','S',0
 
 ; rcx - EFI_IMG_HANDLE  
 ; rdx - EFI_SYS_TABLE
@@ -19,17 +19,15 @@ efi_main:
     mov [sys_table], rdx
 
     ; clear screen
-    mov rcx, [sys_table]
-    add rcx, efi_sys_table.console_out_protocol
-    mov rcx, [rcx]
-    call [rcx + efi_text_output_protocol.clear_screen]
+    call console_clear
+
+    ; set cursor
+    mov rdx, 0
+    call console_cursor_set
 
     ; log welcome msg
-    mov rcx, [sys_table]
-    add rcx, efi_sys_table.console_out_protocol
-    mov rcx, [rcx]
     mov rdx, msg
-    call [rcx + efi_text_output_protocol.out_str]
+    call console_out
 
     ; infinite loop
     jmp $
