@@ -1,12 +1,13 @@
 
 # general settings
-project := bootloader
-extension := .efi
-entry_point := efi_main
+bt_name := bootloader
+bt_ext := .efi
+bt_entry := efi_main
 
 # paths
 bin_path := bin
 src_path := bootloader
+root_path := $(bin_path)/root
 
 # files
 main_file := $(src_path)/boot.asm
@@ -16,39 +17,35 @@ disk_img := $(bin_path)/boot.img
 
 # assembly
 assembler := nasm
-bootloader_flags := -f win64 -I$(src_path)
+btflags := -f win64 -I$(src_path)
 
 # linker
 linker := lld-link
-linker_flags := /subsystem:efi_application /entry:$(entry_point) /out:$(bin_path)/$(project)$(extension)
+linker_flags := /subsystem:efi_application /entry:$(bt_entry) /out:$(bin_path)/$(bt_name)$(bt_ext)
 
 # virtual machine
 vm := qemu-system-x86_64  
 vmflags := -m 512 -bios $(ovmf_file) -drive
 
-# run project using virtual machine
+# run bt_name using virtual machine
 .PHONY: run
-run: disk_image
-	 $(vm) $(vmflags) format=raw,file=$(disk_img)
+run: file_system
+	$(vm) $(vmflags) format=raw,file=fat:rw:$(root_path)
 
-# create disk image
-.PHONY: disk_image
-disk_image: executable
-	dd if=/dev/zero of=$(disk_img) bs=1M count=64
-	mkfs.fat -F 32 $(disk_img)
-	mmd -i $(disk_img) ::/EFI
-	mmd -i $(disk_img) ::/EFI/BOOT
-	mcopy -i $(disk_img) $(bin_path)/$(project)$(extension) ::/EFI/BOOT/BOOTX64.EFI
+.PHONY: file_system
+file_system: executable
+	mkdir -p $(root_path)/EFI/BOOT
+	cp $(bin_path)/$(bt_name)$(bt_ext) $(root_path)/EFI/BOOT/BOOTX64.EFI
 
 # produce executable
 .PHONY: executable
 executable: object
-	$(linker) $(linker_flags) $(bin_path)/$(project).o
+	$(linker) $(linker_flags) $(bin_path)/$(bt_name).o
 
 # produce object
 .PHONY: object
 object: ovmf
-	$(assembler) $(bootloader_flags) $(main_file) -o $(bin_path)/$(project).o
+	$(assembler) $(btflags) $(main_file) -o $(bin_path)/$(bt_name).o
 
 # get ovmf binaries (it should be installed on machine)
 .PHONY: ovmf
