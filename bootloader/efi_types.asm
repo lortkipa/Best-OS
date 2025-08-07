@@ -1,3 +1,5 @@
+%ifndef EFI_TYPES
+%define EFI_TYPES
 
 struc efi_table_header
     .signature resq 1
@@ -35,3 +37,5 @@ struc efi_text_output_protocol
     .enable_cursor resq 1
     .mode resq 1
 endstruc
+
+%endif ; EFI_TYPES

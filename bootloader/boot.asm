@@ -1,8 +1,11 @@
+%ifndef BOOT
+%define BOOT
 
 ; uefi loads in long mode
 bits 64
 
 %include 'efi_types.asm'
+%include 'io/console.asm'
 
 section .data
     msg: dw 'H','e','l','l','o',' ','T','o',' ','B','e','s','t','-','O','S',0
@@ -29,3 +32,5 @@ efi_main:
 
 section .bss
     sys_table: resq 1
+
+%endif ; BOOT
