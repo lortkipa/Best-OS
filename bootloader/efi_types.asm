@@ -39,4 +39,12 @@ struc efi_text_output_protocol
     .mode resq 1
 endstruc
 
+; %1 - register to load into
+; %2 - protocol name (that is provided in efi_sys_table struct)
+%macro efi_sys_table_prot_load 2
+    mov %1, [sys_table]
+    add %1, efi_sys_table.%2
+    mov %1, [rcx]
+%endmacro
+
 %endif ; EFI_TYPES
